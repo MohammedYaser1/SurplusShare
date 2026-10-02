@@ -12,16 +12,22 @@ import math
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(24)
 
-# Use DATABASE_URL from environment or fallback to local PostgreSQL for dev
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    "postgresql://surplus_share_database_o0pq_user:VWwN9eo9Sl09IB5uEvDHcaaqbXFMHo6R"
-    "@dpg-d2dnu3juibrs738mqbvg-a.singapore-postgres.render.com:5432/surplus_share_database_o0pq"
-)
+# Runtime configuration comes from environment variables.
+# Keep deployment credentials out of the repository.
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', os.urandom(24))
 
+database_url = os.getenv('DATABASE_URL')
+if not database_url:
+    raise RuntimeError(
+        'DATABASE_URL is required. Set it in the environment before starting the application.'
+    )
 
+# Some hosting providers still expose the legacy postgres:// scheme.
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -225,7 +231,7 @@ def get_user_coordinates(address):
     }
 
     try:
-        response = requests.get(url, params=params, headers={'User-Agent': 'greenplate-app'})
+        response = requests.get(url, params=params, headers={'User-Agent': 'SurplusShare/1.0'})
         response.raise_for_status()
         data = response.json()
         if data:
