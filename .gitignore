@@ -1,5 +1,38 @@
-venv/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
-surplusshare-14d7d-firebase-adminsdk-fbsvc-e2079f0ee3.json
+Thumbs.db
+
+# Local tooling / temporary files
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.log
+
+# Service credentials
+*firebase-adminsdk*.json
